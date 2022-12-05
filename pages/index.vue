@@ -32,10 +32,20 @@ const squad = ref([
   },
 ]);
 
+const removedMembers = ref([]);
+
 const loading = ref(false);
 
 const shuffle = () => {
   squad.value = useShuffle(squad.value);
+};
+
+const removeMember = (index) => {
+  removedMembers.value.push(...squad.value.splice(index, 1));
+};
+
+const addMember = (index) => {
+  squad.value.push(...removedMembers.value.splice(index, 1));
 };
 
 const repeater = (times) => {
@@ -64,7 +74,29 @@ onMounted(() => {
       class="relative flex flex-row items-center justify-between gap-4 max-w-3xl"
     >
       <TransitionGroup name="fade">
-        <div class="avatar" v-for="member in squad" :key="member.name">
+        <div
+          class="avatar cursor-pointer filter grayscale"
+          v-for="(member, index) in removedMembers"
+          :key="member.name"
+          @click="addMember(index)"
+        >
+          <div class="w-12 mask mask-squircle">
+            <img :src="member.image" />
+          </div>
+        </div>
+      </TransitionGroup>
+    </div>
+
+    <div
+      class="relative flex flex-row items-center justify-between gap-4 max-w-3xl"
+    >
+      <TransitionGroup name="fade">
+        <div
+          class="avatar cursor-pointer"
+          v-for="(member, index) in squad"
+          :key="member.name"
+          @click="removeMember(index)"
+        >
           <div class="w-24 mask mask-squircle">
             <img :src="member.image" />
           </div>
@@ -72,7 +104,11 @@ onMounted(() => {
       </TransitionGroup>
     </div>
 
-    <button class="btn" @click="repeater(5)" :disabled="loading">
+    <button
+      class="btn"
+      @click="repeater(5)"
+      :disabled="loading || squad.length <= 1"
+    >
       shuffle
     </button>
   </div>
