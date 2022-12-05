@@ -32,9 +32,28 @@ const squad = ref([
   },
 ]);
 
-const shuffle = (list) => {
-  return useShuffle(list);
+const loading = ref(false);
+
+const shuffle = () => {
+  squad.value = useShuffle(squad.value);
 };
+
+const repeater = (times) => {
+  loading.value = true;
+  let counter = 0;
+  var interval = setInterval(() => {
+    shuffle();
+    counter++;
+    if (counter >= times) {
+      clearInterval(interval);
+      loading.value = false;
+    }
+  }, 200);
+};
+
+onMounted(() => {
+  repeater(5);
+});
 </script>
 
 <template>
@@ -53,7 +72,9 @@ const shuffle = (list) => {
       </TransitionGroup>
     </div>
 
-    <button class="btn" @click="squad = shuffle(squad)">shuffle</button>
+    <button class="btn" @click="repeater(5)" :disabled="loading">
+      shuffle
+    </button>
   </div>
 </template>
 
@@ -69,7 +90,7 @@ body,
 .fade-move,
 .fade-enter-active,
 .fade-leave-active {
-  transition: all 0.5s cubic-bezier(0.55, 0, 0.1, 1);
+  transition: all 0.2s cubic-bezier(0.55, 0, 0.1, 1);
 }
 
 /* 2. declare enter from and leave to state */
