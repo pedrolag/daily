@@ -60,10 +60,6 @@ const repeater = (times) => {
     }
   }, 200);
 };
-
-onMounted(() => {
-  repeater(5);
-});
 </script>
 
 <template>
